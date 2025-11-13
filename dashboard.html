@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Supermercado Líder</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/powerbi-client/dist/powerbi.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+  <img src="assets/logo-lider.png" alt="Logo Supermercados Líder" class="h-10 w-auto" />
+
+
+  <!-- User Menu -->
+  <div class="relative">
+    <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+      <img src="assets/user-icon.png" alt="Usuario" class="w-8 h-8 rounded-full border" />
+      <span class="text-gray-700 font-medium hidden sm:inline">Usuario</span>
+    </button>
+
+    <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg hidden z-50">
+      <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Ver perfil</a>
+      <a href="#" id="logoutBtn" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Cerrar sesión</a>
+    </div>
+  </div>
+</header>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-blue-800 text-white flex flex-col p-6 space-y-6">
+      <h2 class="text-2xl font-bold">Menú</h2>
+      <nav>
+        <ul id="menuLider" class="space-y-4">
+          <li><a href="#" class="block hover:text-yellow-300">Inventario</a></li>
+          <li><a href="#" id="menuVentas" class="block hover:text-yellow-300">Ventas</a></li>
+          <li><a href="#" class="block hover:text-yellow-300">Proveedores</a></li>
+          <li><a href="#" class="block hover:text-yellow-300">Clientes</a></li>
+          <li><a href="#" class="block hover:text-yellow-300">Productos</a></li>
+          <li><a href="#" id="menuOfertas" class="block hover:text-yellow-300">Ofertas</a></li>
+          <li id="panelControlItem" style="display: none;">
+            <a href="#" class="block hover:text-yellow-300">Panel de Control</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 p-8">
+      <header class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Bienvenido, <span id="nombreUsuario"></span></h1>
+        <p class="text-gray-600">Sistema de gestión</p>
+      </header>
+
+      <!-- Bloque de bienvenida -->
+      <section id="bienvenida" class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Acerca del sistema</h2>
+        <p class="text-gray-600 mb-4">
+          Este sistema ha sido diseñado para facilitar la gestión operativa de Supermercados Líder. Desde este panel podrá acceder a los módulos de Inventario, Ventas, Proveedores, Clientes, Productos y Ofertas. Cada módulo está optimizado para brindar claridad, rapidez y control.
+        </p>
+        <p class="text-gray-600">
+          Si usted es Gerente, también tendrá acceso al Panel de Control, donde podrá visualizar indicadores estratégicos y gráficos integrados desde Power BI para apoyar la toma de decisiones.
+        </p>
+      </section>
+
+
+
+
+
+
+      <!-- Módulo de Proveedores -->
+      <section id="moduloProveedores" class="hidden bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Proveedores</h2>
+
+        <!-- Botones principales -->
+        <div id="botonesProveedor" class="flex gap-4 mb-4">
+          <button id="btnAgregar" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
+          <button id="btnBuscar" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Buscar</button>
+        </div>
+
+        <!-- Formulario para nuevo proveedor -->
+        <div id="formularioProveedor" class="hidden">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">Nuevo Proveedor</h3>
+          <form id="proveedorForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" id="rut" placeholder="RUT" required class="input" />
+            <input type="text" id="nombre" placeholder="Nombre" required class="input" />
+            <input type="text" id="direccion" placeholder="Dirección" required class="input" />
+            <input type="text" id="ciudad" placeholder="Ciudad" required class="input" />
+
+            <select id="region" required class="input">
+              <option value="" disabled selected>Seleccione una región</option>
+              <option value="Región de Arica y Parinacota">Región de Arica y Parinacota</option>
+              <option value="Región de Tarapacá">Región de Tarapacá</option>
+              <option value="Región de Antofagasta">Región de Antofagasta</option>
+              <option value="Región de Atacama">Región de Atacama</option>
+              <option value="Región de Coquimbo">Región de Coquimbo</option>
+              <option value="Región de Valparaíso">Región de Valparaíso</option>
+              <option value="Región Metropolitana de Santiago">Región Metropolitana de Santiago</option>
+              <option value="Región del Libertador General Bernardo O'Higgins">Región del Libertador General Bernardo O'Higgins</option>
+              <option value="Región del Maule">Región del Maule</option>
+              <option value="Región de Ñuble">Región de Ñuble</option>
+              <option value="Región del Biobío">Región del Biobío</option>
+              <option value="Región de La Araucanía">Región de La Araucanía</option>
+              <option value="Región de Los Ríos">Región de Los Ríos</option>
+              <option value="Región de Los Lagos">Región de Los Lagos</option>
+              <option value="Región de Aysén del General Carlos Ibáñez del Campo">Región de Aysén del General Carlos Ibáñez del Campo</option>
+              <option value="Región de Magallanes y de la Antártica Chilena">Región de Magallanes y de la Antártica Chilena</option>
+            </select>
+
+            <input type="text" id="contactoNombre" placeholder="Nombre de Contacto Clave" required class="input" />
+            <input type="text" id="contactoTelefono" placeholder="Teléfono de Contacto Clave" required class="input" />
+            <input type="email" id="contactoEmail" placeholder="Email de Contacto Clave" required class="input" />
+
+            <select id="tipoProductos" required class="input">
+              <option value="" disabled selected>Seleccione tipo de productos</option>
+              <option value="Alimentos y Abarrotes">Alimentos y Abarrotes</option>
+              <option value="Productos Frescos">Productos Frescos</option>
+              <option value="Hogar y Limpieza">Hogar y Limpieza</option>
+              <option value="Cuidado Personal y Salud">Cuidado Personal y Salud</option>
+              <option value="Mercadería General">Mercadería General</option>
+              <option value="Suministros y Servicios">Suministros y Servicios</option>
+            </select>
+
+            <div class="md:col-span-2 flex justify-between gap-4 mt-4">
+              <button type="button" id="btnVolver" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Volver</button>
+              <button type="button" id="btnLimpiar" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">Limpiar Campos</button>
+              <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar</button>
+            </div>
+          </form>
+
+          <p id="mensajeExito" class="text-green-600 mt-4 hidden">✅ Se ha guardado exitosamente.</p>
+          <p id="mensajeError" class="text-red-600 mt-2 hidden">❌ No se ha podido guardar: el proveedor ya está inscrito.</p>
+        </div>
+      </section>
+
+      <!-- Sección de búsqueda de proveedores -->
+      <div id="busquedaProveedores" class="hidden mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Listado de Proveedores</h3>
+
+      <!-- Filtros -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <select id="filtroRegion" class="input">
+            <option value="">Todas las regiones</option>
+            <option value="Región de Arica y Parinacota">Región de Arica y Parinacota</option>
+            <option value="Región de Tarapacá">Región de Tarapacá</option>
+            <option value="Región de Antofagasta">Región de Antofagasta</option>
+            <option value="Región de Atacama">Región de Atacama</option>
+            <option value="Región de Coquimbo">Región de Coquimbo</option>
+            <option value="Región de Valparaíso">Región de Valparaíso</option>
+            <option value="Región Metropolitana de Santiago">Región Metropolitana de Santiago</option>
+            <option value="Región del Libertador General Bernardo O'Higgins">Región del Libertador General Bernardo O'Higgins</option>
+            <option value="Región del Maule">Región del Maule</option>
+            <option value="Región de Ñuble">Región de Ñuble</option>
+            <option value="Región del Biobío">Región del Biobío</option>
+            <option value="Región de La Araucanía">Región de La Araucanía</option>
+            <option value="Región de Los Ríos">Región de Los Ríos</option>
+            <option value="Región de Los Lagos">Región de Los Lagos</option>
+            <option value="Región de Aysén del General Carlos Ibáñez del Campo">Región de Aysén del General Carlos Ibáñez del Campo</option>
+            <option value="Región de Magallanes y de la Antártica Chilena">Región de Magallanes y de la Antártica Chilena</option>
+          </select>
+
+          <select id="filtroMes" class="input">
+            <option value="">Todos los meses</option>
+            <option value="01">Enero</option>
+            <option value="02">Febrero</option>
+            <option value="03">Marzo</option>
+            <option value="04">Abril</option>
+            <option value="05">Mayo</option>
+            <option value="06">Junio</option>
+            <option value="07">Julio</option>
+            <option value="08">Agosto</option>
+            <option value="09">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+          <select id="filtroTipo" class="input">
+            <option value="">Todos los tipos</option>
+            <option value="Alimentos y Abarrotes">Alimentos y Abarrotes</option>
+            <option value="Productos Frescos">Productos Frescos</option>
+            <option value="Hogar y Limpieza">Hogar y Limpieza</option>
+            <option value="Cuidado Personal y Salud">Cuidado Personal y Salud</option>
+            <option value="Mercadería General">Mercadería General</option>
+            <option value="Suministros y Servicios">Suministros y Servicios</option>
+          </select>
+          <select id="filtroEstado" class="input">
+            <option value="">Todos los estados</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+          <select id="filtroOrden" class="input">
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+        </div>
+
+        <!-- Buscador por RUT -->
+        <input type="text" id="buscadorRut" placeholder="Buscar por RUT..." class="input mb-4" />
+
+        <!-- Tabla de resultados -->
+        <div class="overflow-x-auto">
+          <table class="w-full bg-white border rounded">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left">RUT</th>
+                <th class="px-4 py-2 text-left">Nombre</th>
+                <th class="px-4 py-2 text-left">Dirección</th>
+                <th class="px-4 py-2 text-left">Ciudad</th>
+                <th class="px-4 py-2 text-left">Región</th>
+                <th class="px-4 py-2 text-left">Contacto</th>
+                <th class="px-4 py-2 text-left">Teléfono</th>
+                <th class="px-4 py-2 text-left">Email</th>
+                <th class="px-4 py-2 text-left">Tipo</th>
+                <th class="px-4 py-2 text-left">Estado</th>
+                <th class="px-4 py-2 text-left">Fecha</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaProveedores" class="text-sm text-gray-800"></tbody>
+          </table>
+        </div>
+
+        <!-- Botón regresar -->
+        <div class="mt-4 flex justify-start">
+          <button id="btnRegresarBusqueda" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+        </div>
+      </div>
+
+      <!-- Formulario para modificar proveedor -->
+      <div id="formularioModificar" class="hidden mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Modificar Proveedor</h3>
+        <form id="modificarForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="modRut" required class="input" />
+          <input type="text" id="modNombre" required class="input" />
+          <input type="text" id="modDireccion" required class="input" />
+          <input type="text" id="modCiudad" required class="input" />
+
+          <select id="modRegion" required class="input">
+            <option value="" disabled>Seleccione una región</option>
+              <option value="Región de Arica y Parinacota">Región de Arica y Parinacota</option>
+              <option value="Región de Tarapacá">Región de Tarapacá</option>
+              <option value="Región de Antofagasta">Región de Antofagasta</option>
+              <option value="Región de Atacama">Región de Atacama</option>
+              <option value="Región de Coquimbo">Región de Coquimbo</option>
+              <option value="Región de Valparaíso">Región de Valparaíso</option>
+              <option value="Región Metropolitana de Santiago">Región Metropolitana de Santiago</option>
+              <option value="Región del Libertador General Bernardo O'Higgins">Región del Libertador General Bernardo O'Higgins</option>
+              <option value="Región del Maule">Región del Maule</option>
+              <option value="Región de Ñuble">Región de Ñuble</option>
+              <option value="Región del Biobío">Región del Biobío</option>
+              <option value="Región de La Araucanía">Región de La Araucanía</option>
+              <option value="Región de Los Ríos">Región de Los Ríos</option>
+              <option value="Región de Los Lagos">Región de Los Lagos</option>
+              <option value="Región de Aysén del General Carlos Ibáñez del Campo">Región de Aysén del General Carlos Ibáñez del Campo</option>
+              <option value="Región de Magallanes y de la Antártica Chilena">Región de Magallanes y de la Antártica Chilena</option>
+          </select>
+
+          <input type="text" id="modContactoNombre" required class="input" />
+          <input type="text" id="modContactoTelefono" required class="input" />
+          <input type="email" id="modContactoEmail" required class="input" />
+
+          <select id="modTipoProductos" required class="input">
+            <option value="" disabled>Seleccione tipo de productos</option>
+              <option value="" disabled selected>Seleccione tipo de productos</option>
+              <option value="Alimentos y Abarrotes">Alimentos y Abarrotes</option>
+              <option value="Productos Frescos">Productos Frescos</option>
+              <option value="Hogar y Limpieza">Hogar y Limpieza</option>
+              <option value="Cuidado Personal y Salud">Cuidado Personal y Salud</option>
+              <option value="Mercadería General">Mercadería General</option>
+              <option value="Suministros y Servicios">Suministros y Servicios</option>
+          </select>
+
+          <select id="modEstado" required class="input">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+
+          <div class="md:col-span-2 flex justify-between gap-4 mt-4">
+            <button type="button" id="btnCancelarMod" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- Módulo de Productos -->
+      <section id="moduloProductos" class="hidden bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Productos</h2>
+
+      <!-- Botones principales -->
+        <div id="botonesProductos" class="flex gap-4 mb-4">
+          <button id="btnAgregarProducto" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar</button>
+          <button id="btnBuscarProducto" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Buscar</button>
+          </div>
+
+  <!-- Formulario para nuevo producto -->
+        <div id="formularioProducto" class="hidden">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">Nuevo Producto</h3>
+          <form id="productoForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" id="sku" placeholder="SKU" required class="input" />
+            <input type="text" id="nombreProducto" placeholder="Nombre del Producto" required class="input" />
+            <input type="text" id="marca" placeholder="Marca" required class="input" />
+
+            <select id="categoria" required class="input">
+              <option value="" disabled selected>Seleccione categoría</option>
+              <option value="Alimentos">Alimentos</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Higiene y Salud">Higiene y Salud</option>
+              <option value="Mascotas">Mascotas</option>
+              <option value="Electrodomésticos">Electrodomésticos</option>
+              <option value="Otros">Otros</option>
+            </select>
+
+            <select id="proveedorProducto" required class="input">
+              <option value="" disabled selected>Seleccione proveedor</option>
+        <!-- Se llenará dinámicamente -->
+            </select>
+
+            <select id="unidadMedida" required class="input">
+              <option value="" disabled selected>Unidad de medida</option>
+              <option value="Unidad">Unidad</option>
+              <option value="KG">KG</option>
+              <option value="Litro">Litro</option>
+              <option value="Pack">Pack</option>
+              <option value="Otros">Otros</option>
+            </select>
+
+            <input type="number" id="costo" placeholder="Costo" required class="input" />
+
+            <div class="md:col-span-2 flex justify-between gap-4 mt-4">
+              <button type="button" id="btnVolverProducto" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+              <button type="button" id="btnLimpiarProducto" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">Limpiar Campos</button>
+              <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar</button>
+            </div>
+          </form>
+
+          <p id="mensajeProductoExito" class="text-green-600 mt-4 hidden">✅ Producto guardado exitosamente.</p>
+        </div>
+      </section>
+
+
+
+      <!-- Sección de búsqueda de productos -->
+      <div id="busquedaProductos" class="hidden mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Listado de Productos</h3>
+
+  <!-- Filtros -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <input type="text" id="filtroMarca" placeholder="Filtrar por marca..." class="input" />
+          <select id="filtroCategoria" class="input">
+            <option value="">Todas las categorías</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Higiene y Salud">Higiene y Salud</option>
+            <option value="Mascotas">Mascotas</option>
+            <option value="Electrodomésticos">Electrodomésticos</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <select id="filtroProveedor" class="input">
+              <option value="">Todos los proveedores</option>
+      <!-- Se llenará dinámicamente -->
+          </select>
+          <select id="filtroOrdenProducto" class="input">
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+          <input type="text" id="buscadorSKU" placeholder="Buscar por SKU..." class="input" />
+        </div>
+
+  <!-- Tabla de resultados -->
+        <div class="overflow-x-auto">
+          <table class="w-full bg-white border rounded">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left">SKU</th>
+                <th class="px-4 py-2 text-left">Nombre</th>
+                <th class="px-4 py-2 text-left">Marca</th>
+                <th class="px-4 py-2 text-left">Categoría</th>
+                <th class="px-4 py-2 text-left">Proveedor</th>
+                <th class="px-4 py-2 text-left">Unidad</th>
+                <th class="px-4 py-2 text-left">Costo</th>
+                <th class="px-4 py-2 text-left">Estado</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+              </tr>
+            </thead>
+          <tbody id="tablaProductos" class="text-sm text-gray-800"></tbody>
+          </table>
+        </div>
+
+      <!-- Botón regresar -->
+        <div class="mt-4 flex justify-start">
+          <button id="btnRegresarProductos" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+        </div>
+      </div>
+
+      <!-- Formulario para modificar producto -->
+      <div id="formularioModificarProducto" class="hidden mt-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Modificar Producto</h3>
+        <form id="modificarProductoForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" id="modSku" required class="input" />
+          <input type="text" id="modNombreProducto" required class="input" />
+          <input type="text" id="modMarca" required class="input" />
+
+          <select id="modCategoria" required class="input">
+            <option value="" disabled>Seleccione categoría</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Higiene y Salud">Higiene y Salud</option>
+            <option value="Mascotas">Mascotas</option>
+            <option value="Electrodomésticos">Electrodomésticos</option>
+            <option value="Otros">Otros</option>
+          </select>
+
+          <select id="modProveedor" required class="input">
+            <option value="" disabled>Seleccione proveedor</option>
+          <!-- Se llenará dinámicamente -->
+          </select>
+
+          <select id="modUnidadMedida" required class="input">
+            <option value="" disabled>Unidad de medida</option>
+            <option value="Unidad">Unidad</option>
+            <option value="KG">KG</option>
+            <option value="Litro">Litro</option>
+            <option value="Pack">Pack</option>
+            <option value="Otros">Otros</option>
+          </select>
+
+          <input type="number" id="modCosto" required class="input" />
+
+          <select id="modEstadoProducto" required class="input">
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+
+          <div class="md:col-span-2 flex justify-between gap-4 mt-4">
+            <button type="button" id="btnCancelarModProducto" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- Módulo de Clientes -->
+      <section id="moduloClientes" class="hidden opacity-0 transition-opacity duration-200 ease-in-out bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Clientes</h2>
+
+        <!-- Botones -->
+        <div class="flex gap-4 mb-4">
+          <button id="btnImportarClientes" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Importar Clientes</button>
+          <input type="file" id="inputImportarClientes" accept=".xlsx" class="hidden" />
+        </div>
+
+        <!-- Filtros -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <select id="filtroTipoCliente" class="input">
+            <option value="">Todos los tipos</option>
+            <option value="Persona Natural">Persona Natural</option>
+            <option value="Empresa">Empresa</option>
+            <option value="Mayorista">Mayorista</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <select id="filtroRegionCliente" class="input">
+            <option value="">Todas las regiones</option>
+            <option value="Región de Arica y Parinacota">Región de Arica y Parinacota</option>
+            <option value="Región de Tarapacá">Región de Tarapacá</option>
+            <option value="Región de Antofagasta">Región de Antofagasta</option>
+            <option value="Región de Atacama">Región de Atacama</option>
+            <option value="Región de Coquimbo">Región de Coquimbo</option>
+            <option value="Región de Valparaíso">Región de Valparaíso</option>
+            <option value="Región Metropolitana de Santiago">Región Metropolitana de Santiago</option>
+            <option value="Región del Libertador General Bernardo O'Higgins">Región del Libertador General Bernardo O'Higgins</option>
+            <option value="Región del Maule">Región del Maule</option>
+            <option value="Región de Ñuble">Región de Ñuble</option>
+            <option value="Región del Biobío">Región del Biobío</option>
+            <option value="Región de La Araucanía">Región de La Araucanía</option>
+            <option value="Región de Los Ríos">Región de Los Ríos</option>
+            <option value="Región de Los Lagos">Región de Los Lagos</option>
+            <option value="Región de Aysén del General Carlos Ibáñez del Campo">Región de Aysén del General Carlos Ibáñez del Campo</option>
+            <option value="Región de Magallanes y de la Antártica Chilena">Región de Magallanes y de la Antártica Chilena</option>
+          </select>
+          <select id="filtroClub" class="input">
+            <option value="">Miembro Club Líder</option>
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+          <select id="filtroLealtad" class="input">
+            <option value="">Nivel de Lealtad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+          <select id="filtroOrdenCliente" class="input">
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+          </select>
+        </div>
+
+        <!-- Buscador -->
+        <input type="text" id="buscadorRutCliente" placeholder="Buscar por RUT..." class="input mb-4" />
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+          <table class="w-full bg-white border rounded">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left">RUT</th>
+                <th class="px-4 py-2 text-left">Nombre</th>
+                <th class="px-4 py-2 text-left">Tipo</th>
+                <th class="px-4 py-2 text-left">Correo</th>
+                <th class="px-4 py-2 text-left">Teléfono</th>
+                <th class="px-4 py-2 text-left">Región</th>
+                <th class="px-4 py-2 text-left">Club Líder</th>
+                <th class="px-4 py-2 text-left">Lealtad</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaClientes" class="text-sm text-gray-800"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- Módulo de Inventario -->
+      <section id="moduloInventario" class="hidden opacity-0 transition-opacity duration-200 ease-in-out bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Inventario</h2>
+
+  <!-- Filtros -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <select id="filtroCategoriaInv" class="input">
+            <option value="">Todas las categorías</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Higiene y Salud">Higiene y Salud</option>
+            <option value="Mascotas">Mascotas</option>
+            <option value="Electrodomésticos">Electrodomésticos</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <select id="filtroEstadoInv" class="input">
+            <option value="">Todos los estados</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+          <input type="text" id="buscadorSkuInv" placeholder="Buscar por SKU..." class="input" />
+          <select id="ordenStockInv" class="input">
+            <option value="asc">Stock: Menor a Mayor</option>
+            <option value="desc">Stock: Mayor a Menor</option>
+          </select>
+        </div>
+
+  <!-- Tabla -->
+        <div class="overflow-x-auto">
+          <table class="w-full bg-white border rounded">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left">SKU</th>
+                <th class="px-4 py-2 text-left">Categoría</th>
+                <th class="px-4 py-2 text-left">Stock</th>
+                <th class="px-4 py-2 text-left">Ubicación</th>
+                <th class="px-4 py-2 text-left">Precio Venta</th>
+                <th class="px-4 py-2 text-left">Estado</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaInventario" class="text-sm text-gray-800"></tbody>
+          </table>
+        </div>
+
+  <!-- Formulario de modificación -->
+        <div id="formularioModificarInventario" class="hidden mt-6">
+          <h3 class="text-lg font-semibold text-gray-700 mb-4">Modificar Inventario</h3>
+          <form id="modificarInventarioForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input type="text" id="modSkuInv" disabled class="input" />
+            <input type="text" id="modCategoriaInv" disabled class="input" />
+            <input type="number" id="modStockInv" required class="input" />
+            <input type="text" id="modUbicacionInv" required class="input" />
+            <input type="number" id="modPrecioVentaInv" required class="input" />
+            <select id="modEstadoInv" required class="input">
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+            <div class="md:col-span-2 flex justify-between gap-4 mt-4">
+              <button type="button" id="btnCancelarModInv" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+              <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Guardar cambios</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+
+
+
+
+
+
+
+
+
+
+
+      <!-- Módulo de Ofertas -->
+      <section id="moduloOfertas" class="hidden opacity-0 transition-opacity duration-200 ease-in-out bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Ofertas</h2>
+
+      <!-- Botones -->
+        <div class="flex gap-4 mb-4">
+          <button id="btnNuevaOferta" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Añadir nueva oferta</button>
+          <button id="btnBuscarOferta" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Buscar oferta</button>
+        </div>
+
+  <!-- Formulario de oferta -->
+        <form id="formularioOferta" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+          <select id="ofertaSku" required class="input"></select>
+          <select id="ofertaCategoria" required class="input">
+            <option value="">Seleccione categoría</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Higiene y Salud">Higiene y Salud</option>
+            <option value="Mascotas">Mascotas</option>
+            <option value="Electrodomésticos">Electrodomésticos</option>
+            <option value="Otros">Otros</option>
+          </select>
+          <select id="ofertaTipoPersona" required class="input">
+            <option value="">Tipo de persona</option>
+            <option value="Persona Natural">Persona Natural</option>
+            <option value="Empresa">Empresa</option>
+            <option value="Mayorista">Mayorista</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <select id="ofertaClubLider" required class="input">
+            <option value="">¿Club Líder?</option>
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+          <input type="number" id="ofertaPrecio" placeholder="Nuevo precio" required class="input" />
+          <input type="date" id="ofertaInicio" required class="input" />
+          <input type="date" id="ofertaTermino" required class="input" />
+
+    <!-- Botones -->
+          <div class="md:col-span-2 flex justify-between gap-4 mt-4">
+            <button type="button" id="btnRegresarOferta" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+            <button type="button" id="btnLimpiarOferta" class="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500">Limpiar</button>
+            <button type="submit" id="btnGuardarOferta" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" disabled>Guardar oferta</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Submódulo: Búsqueda de Ofertas -->
+      <section id="busquedaOfertas" class="hidden mt-6">
+        <h3 class="text-lg font-semibold mb-4">Buscar y gestionar ofertas</h3>
+
+  <!-- Filtros -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <input type="text" id="filtroSkuOferta" placeholder="Buscar por SKU" class="input" />
+          <select id="filtroCategoriaOferta" class="input">
+            <option value="">Todas las categorías</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Bebidas">Bebidas</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Electrodomésticos">Electrodomésticos</option>
+          </select>
+          <select id="filtroTipoPersona" class="input">
+            <option value="">Todos los tipos</option>
+            <option value="Persona Natural">Persona Natural</option>
+            <option value="Empresa">Empresa</option>
+            <option value="Mayorista">Mayorista</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <select id="filtroClubLider" class="input">
+            <option value="">Club Líder</option>
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+          <select id="filtroOrdenOferta" class="input">
+            <option value="asc">Orden ascendente</option>
+            <option value="desc">Orden descendente</option>
+          </select>
+        </div>
+
+  <!-- Tabla -->
+        <table class="w-full text-sm text-left border">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2">SKU</th>
+              <th class="px-4 py-2">Categoría</th>
+              <th class="px-4 py-2">Tipo Persona</th>
+              <th class="px-4 py-2">Club Líder</th>
+              <th class="px-4 py-2">Precio</th>
+              <th class="px-4 py-2">Inicio</th>
+              <th class="px-4 py-2">Término</th>
+              <th class="px-4 py-2">Estado</th>
+              <th class="px-4 py-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaOfertas"></tbody>
+        </table>
+
+        <button id="btnRegresarBusquedaOferta" class="mt-4 bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Regresar</button>
+      </section>
+
+
+
+
+
+
+
+
+
+
+      <section id="moduloVentas" class="hidden opacity-0 transition-opacity duration-200 ease-in-out bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Gestión de Ventas</h2>
+
+  <!-- Botones -->
+        <div class="flex gap-4 mb-4">
+          <button id="btnImportarVentas" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Importar Ventas</button>
+          <input type="file" id="inputImportarVentas" accept=".xlsx,.xls" class="hidden" />
+          <button id="btnNuevaVenta" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Agregar Venta</button>
+        </div>
+
+  <!-- Formulario Nueva Venta -->
+        <form id="formularioVenta" class="hidden bg-gray-50 p-4 rounded shadow mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <input id="ventaDocumento" type="text" placeholder="Boleta/Factura" class="border px-3 py-2 rounded" required />
+            <input id="ventaRutCliente" type="text" placeholder="RUT Cliente" class="border px-3 py-2 rounded" required />
+            <input id="ventaSku" type="text" placeholder="SKU" class="border px-3 py-2 rounded" required />
+            <input id="ventaCantidad" type="number" placeholder="Cantidad" class="border px-3 py-2 rounded" required />
+            <input id="ventaPrecioUnitario" type="number" placeholder="Precio Unitario" class="border px-3 py-2 rounded" required />
+            <select id="ventaUsoPromo" class="border px-3 py-2 rounded" required>
+              <option value="">Uso de Promoción</option>
+              <option value="Sí">Sí</option>
+              <option value="No">No</option>
+            </select>
+            <input id="ventaFecha" type="date" class="border px-3 py-2 rounded" required />
+            <select id="ventaMetodoPago" class="border px-3 py-2 rounded" required>
+              <option value="">Método de Pago</option>
+              <option value="efectivo">Efectivo</option>
+              <option value="tarjeta credito">Tarjeta Crédito</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="otro">Otro</option>
+            </select>
+            <select id="ventaEstado" class="border px-3 py-2 rounded" required>
+              <option value="">Estado</option>
+              <option value="completada">Completada</option>
+              <option value="pendiente de pago">Pendiente de pago</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+
+    <!-- Botones del formulario -->
+          <div class="flex gap-4 mt-4">
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Guardar Venta</button>
+            <button type="button" id="btnRegresarVenta" class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">Regresar</button>
+            <button type="button" id="btnLimpiarVenta" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Limpiar</button>
+          </div>
+        </form>
+
+  <!-- Filtros -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <select id="filtroUsoPromo" class="input">
+            <option value="">Uso de Promoción</option>
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+          <select id="filtroMesVenta" class="input">
+            <option value="">Mes de Venta</option>
+            <option value="01">Enero</option>
+            <option value="02">Febrero</option>
+            <option value="03">Marzo</option>
+            <option value="04">Abril</option>
+            <option value="05">Mayo</option>
+            <option value="06">Junio</option>
+            <option value="07">Julio</option>
+            <option value="08">Agosto</option>
+            <option value="09">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+          </select>
+          <select id="filtroMetodoPago" class="input">
+            <option value="">Método de Pago</option>
+            <option value="efectivo">Efectivo</option>
+            <option value="tarjeta credito">Tarjeta Crédito</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="otro">Otro</option>
+          </select>
+          <select id="filtroEstadoVenta" class="input">
+            <option value="">Estado</option>
+            <option value="completada">Completada</option>
+            <option value="pendiente de pago">Pendiente de pago</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+          <input type="text" id="buscadorDocumentoVenta" placeholder="Buscar por Boleta/Factura..." class="input" />
+        </div>
+
+  <!-- Tabla -->
+        <div class="overflow-x-auto">
+          <table class="w-full bg-white border rounded">
+            <thead class="bg-gray-200 text-gray-700">
+              <tr>
+                <th class="px-4 py-2 text-left">Boleta/Factura</th>
+                <th class="px-4 py-2 text-left">RUT Cliente</th>
+                <th class="px-4 py-2 text-left">SKU</th>
+                <th class="px-4 py-2 text-left">Cantidad</th>
+                <th class="px-4 py-2 text-left">Precio Unitario</th>
+                <th class="px-4 py-2 text-left">Uso Promoción</th>
+                <th class="px-4 py-2 text-left">Descuento</th>
+                <th class="px-4 py-2 text-left">Total</th>
+                <th class="px-4 py-2 text-left">Fecha</th>
+                <th class="px-4 py-2 text-left">Pago</th>
+                <th class="px-4 py-2 text-left">Estado</th>
+                <th class="px-4 py-2 text-left">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaVentas" class="text-sm text-gray-800"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+
+
+
+      <script src="js/dashboard.js"></script>
+      </body>
+</html>

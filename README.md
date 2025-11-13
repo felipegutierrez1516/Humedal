@@ -1,2 +1,0 @@
-# Humedal
-Plataforma educativa 

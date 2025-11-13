@@ -1,0 +1,15 @@
+<div id="reportContainer"></div>
+<script src="https://cdn.jsdelivr.net/npm/powerbi-client/dist/powerbi.js"></script>
+<script>
+  const embedConfig = {
+    type: 'report',
+    id: 'TU_REPORT_ID',
+    embedUrl: 'TU_EMBED_URL',
+    accessToken: 'TU_EMBED_TOKEN',
+    settings: {
+      filterPaneEnabled: false,
+      navContentPaneEnabled: true
+    }
+  };
+  powerbi.embed(document.getElementById('reportContainer'), embedConfig);
+</script>
