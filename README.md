@@ -60,7 +60,7 @@ En el sector retail alimenticio, la información tiene una fecha de vencimiento 
 ---
 
 ## 4. Tabla de Atributos Estandarizada
-Para asegurar la calidad de los datos recolectados por todos los integrantes del equipo, se definió un esquema común de extracción. Cada registro en nuestra base de datos NoSQL contiene los siguientes atributos:
+Para asegurar la calidad de los datos recolectados por todos los integrantes del equipo, se definió un esquema común de extracción:
 
 | Atributo | Tipo de Dato | Descripción | Ejemplo |
 | :--- | :--- | :--- | :--- |
@@ -94,7 +94,7 @@ pip install -r requirements.txt
 *Nota: El archivo `requirements.txt` incluye pymongo, selenium, beautifulsoup4 y las herramientas de limpieza necesarias.*
 
 ### 3. Despliegue de Infraestructura (Docker)
-Levanta los servicios en segundo plano (MongoDB, Workspace, Visualizer, FileBrowser):
+Levanta los contenedores en segundo plano (MongoDB, Workspace, Visualizer, FileBrowser):
 ```bash
 docker-compose up -d
 ```
@@ -111,12 +111,12 @@ python main.py
 ## 6. Evidencias de Ejecución
 
 ### Evidencia 1: Salud de los Contenedores
-Confirmación del comando `docker stats` mostrando la operatividad de los cuatro servicios.
+En la siguiente captura se observa el comando `docker stats`, el cual confirma que los cuatro servicios del ecosistema (MongoDB, Workspace, FileBrowser y Visualizer) están operativos y consumiendo recursos de manera eficiente dentro de los límites establecidos.
 
 ![Estadísticas de Docker](evidencias/E1_docker_stats.png)
 
 ### Evidencia 2: Persistencia y Conteo de Datos
-Validación de la carga en la colección `Integracion_Local` (mínimo 500 registros por integrante).
+Tras la ejecución del orquestador, se valida la persistencia en la base de datos Canasta_db, las capturas muestran el conteo de documentos en la colección `Integracion_Local`, superando el umbral mínimo de 500 registros requeridos para cada integrante.
 
 | Felipe Gutiérrez | Franco Teyssandier |
 | :---: | :---: |
