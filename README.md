@@ -11,6 +11,48 @@
 
 ---
 
+# Analítica de Big Data: Diagnóstico y Segmentación del Retail Alimenticio
+
+Este repositorio contiene el pipeline de datos automatizado para la extracción, procesamiento, almacenamiento y modelado analítico de los productos de la canasta básica de alimentos en Chile, actuando como una unidad de Inteligencia de Negocios (BI) para el control de gestión en el sector retail.
+
+## Arquitectura del Proyecto
+
+El flujo de trabajo está diseñado bajo una arquitectura de contenedores y servicios distribuidos:
+1. **Extracción (Web Scraping):** Scripts desarrollados en Python con Selenium para la captura automatizada de datos desde plataformas digitales de supermercados.
+2. **Ingeniería de Datos & Pipeline:** Limpieza, normalización y transformación vectorial de los datos utilizando Apache Spark (PySpark) dentro de entornos Docker.
+3. **Almacenamiento Cloud:** Persistencia y centralización del repositorio analítico en un clúster de MongoDB Atlas.
+4. **Modelado Analítico:** Implementación de algoritmos de Clustering (K-Means) para la segmentación del mercado y preparación del vector predictivo.
+
+---
+
+## Propiedad de Módulo (Entregables Individuales)
+
+
+* **Felipe Gutiérrez Plaza** (Rama: `feature/Felipe-Gutierrez`)  
+  *Responsabilidad:* Gestión de Infraestructura Cloud. Responsable de la configuración del clúster en MongoDB Atlas, manejo de variables de entorno y secretos (`.env`), y la conexión segura del pipeline analítico.
+  
+* **Jorge Chavez Uribe** (Rama: `feature/scraper-jorge-chavez`)  
+  *Responsabilidad:* Ingeniería de Datos y Pipeline. Responsable de la creación y configuración del contenedor Docker enfocado en la limpieza, transformación y carga (ETL) de datos en la colección analítica.
+
+* **Mariana Ferreira Muñoz** (Rama: `feature/scraper-mariana-ferreira`)  
+  *Responsabilidad:* Análisis Descriptivo (EDA). Responsable del análisis multivariado, detección de anomalías, correlaciones lineales y generación de las visualizaciones corporativas.
+
+* **Isidora Matus Cortés** (Rama: `feature/isidoraMatus`)  
+  *Responsabilidad:* Análisis Descriptivo (EDA). Responsable del análisis descriptivo de las distribuciones de precios, validación de la suficiencia muestral y métricas estadísticas base.
+
+* **Renato Gutierrez Ganiffo** (Rama: `feature/renato-gutierrez`)  
+  *Responsabilidad:* Modelado No Supervisado. Responsable de la codificación del algoritmo K-Means en Spark, calibración técnica mediante el método del Codo/Silueta y perfilamiento estadístico.
+
+* **Franco Paredes Vivar** (Rama: `feature/scraper-franco-paredes`)  
+  *Responsabilidad:* Modelado No Supervisado. Responsable de la evaluación de la estabilidad de los clústeres, interpretación cualitativa de los segmentos identificados y su impacto comercial.
+
+* **Franco Teyssandier Perez** (Rama: `feature/scraper-franco-teyssandier`)  
+  *Responsabilidad:* Documentación y Calidad. Responsable de la estructura, estandarización y consolidación del repositorio de código, control de calidad del Git workflow, y redacción del Informe Formal de Análisis.
+
+
+---
+
+
 ## 1. Situación Problema
 En el contexto actual de la economía chilena, el costo de la Canasta Básica de Alimentos se ha convertido en una preocupación para familias y analistas de mercado. ¿La razón?, la decisión de "¿dónde comprar?" se sigue tomando mayoritariamente a ciegas o mediante métodos manuales ineficientes.
 
@@ -77,9 +119,10 @@ Para asegurar la calidad de los datos recolectados por todos los integrantes del
 
 ---
 
-## 5. Guía de Ejecución: Despliegue y Carga de Datos
+## 5. Guía de Ejecución
+El proyecto está diseñado para desplegarse de manera íntegra mediante Docker, abstrayendo la configuración manual de dependencias locales y garantizando la portabilidad absoluta del pipeline en cualquier entorno.
 
-### 1. Preparación del Entorno
+### 1. Requisitos Previos e Inyección de Secretos
 Clona el repositorio oficial y accede a la carpeta de trabajo:
 ```bash
 git clone https://github.com/IICG-Coquimbo/proyecto-big-data-2026-retail-a
@@ -104,6 +147,12 @@ docker-compose up -d
 Para activar los scrapers y guardar los registros en la base de datos local:
 ```bash
 python main.py
+```
+
+### 5. Requisitos de Credenciales
+Deja en blanco el nombre del archivo `ejemplo.env` y modifica tus parámetros de Usuario y Contraseña:
+```bash
+MONGO_URI=mongodb+srv://<USUARIO>:<PASSWORD>@cluster0.6zjv54l.mongodb.net/Canasta_db?retryWrites=true&w=majority
 ```
 
 ---
